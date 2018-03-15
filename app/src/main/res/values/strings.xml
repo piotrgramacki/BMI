@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">BMI</string>
+    <string name="bmi">BMI</string>
+    <string name="wrong_data">WRONG_DATA</string>
+    <string name="file_error">FILE ERROR</string>
+    <string name="mass_si">MASS [kg]</string>
+    <string name="height_si">HEIGHT [cm]</string>
+    <string name="mass_imp">MASS [lbs]</string>
+    <string name="height_imp">HEIGHT [in]</string>
+    <string name="calc">CALCULATE</string>
+    <string name="units_imperial">LBS/IN</string>
+    <string name="units_si">KG/CM</string>
+    <string name="units">UNITS</string>
+    <string name="about">About me</string>
+    <string name="save">Save</string>
+    <string name="first_name">PIOTR</string>
+    <string name="last_name">GRAMACKI</string>
+    <string name="filename">data</string>
+    <string name="saved">SAVED DATA</string>
+</resources>
