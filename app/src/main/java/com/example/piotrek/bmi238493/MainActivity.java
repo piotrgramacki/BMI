@@ -22,61 +22,21 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
-    private Switch units_switch;
-    private TextView mass_text;
-    private TextView height_text;
-    private EditText mass_data;
-    private EditText height_data;
-    private BMI bmi_manager;
+    private Button calcButton;
+    private Switch unitsSwitch;
+    private TextView massText;
+    private TextView heightText;
+    private EditText massData;
+    private EditText heightData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        units_switch = findViewById(R.id.switch_units);
-        Button calc_button = findViewById(R.id.calc);
-        mass_text = findViewById(R.id.mass_text);
-        height_text = findViewById(R.id.height_text);
-        mass_data = findViewById(R.id.mass_data);
-        height_data = findViewById(R.id.height_data);
-
+        initializeViews();
         restoreData();
-
-        units_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (!units_switch.isChecked()) {
-                    changeToSI();
-                } else {
-                    changeToImperial();
-                }
-            }
-        });
-
-        final Intent result_intent = new Intent(this, ResultActivity.class);
-        calc_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                double mass = getDoubleFromField(mass_data);
-                double height = getDoubleFromField(height_data);
-                if (units_switch.isChecked())
-                    bmi_manager = new BMIForImperial(mass, height);
-                else bmi_manager = new BMIForKg(mass, height);
-
-                try {
-                    double res = bmi_manager.calculate();
-                    result_intent.putExtra("bmi", res);
-                    result_intent.putExtra("color", getCategoryColor(bmi_manager.category()));
-                    startActivity(result_intent);
-                } catch (IllegalArgumentException e) {
-                    Toast.makeText(
-                            getApplicationContext(),
-                            getString(R.string.wrong_data),
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        setListeners();
     }
 
     @Override
@@ -101,29 +61,90 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initializeViews() {
+        unitsSwitch = findViewById(R.id.switch_units);
+        calcButton = findViewById(R.id.calc);
+        massText = findViewById(R.id.mass_text);
+        heightText = findViewById(R.id.height_text);
+        massData = findViewById(R.id.mass_data);
+        heightData = findViewById(R.id.height_data);
+    }
+
+    private void setListeners() {
+        unitsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                changeUnits();
+            }
+        });
+
+        calcButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calculateBMI();
+            }
+        });
+    }
+
+    private void calculateBMI() {
+        final Intent result_intent = new Intent(this, ResultActivity.class);
+
+        double mass = getDoubleFromField(massData);
+        double height = getDoubleFromField(heightData);
+        BMI bmiManager;
+        if (unitsSwitch.isChecked())
+            bmiManager = new BMIForImperial(mass, height);
+        else bmiManager = new BMIForKg(mass, height);
+
+        try {
+            double res = bmiManager.calculate();
+            result_intent.putExtra("bmi", res);
+            result_intent.putExtra("color", getCategoryColor(bmiManager.category()));
+            startActivity(result_intent);
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(
+                    getApplicationContext(),
+                    getString(R.string.wrong_data),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void changeUnits() {
+        if (!unitsSwitch.isChecked()) {
+            changeToSI();
+        } else {
+            changeToImperial();
+        }
+    }
 
     private void changeToSI() {
-        units_switch.setText(getString(R.string.units_si));
-        mass_text.setText(getString(R.string.mass_si));
-        height_text.setText(getString(R.string.height_si));
-        mass_data.getText().clear();
-        height_data.getText().clear();
+        unitsSwitch.setText(getString(R.string.units_si));
+        massText.setText(getString(R.string.mass_si));
+        heightText.setText(getString(R.string.height_si));
+        massData.getText().clear();
+        heightData.getText().clear();
     }
 
     private void changeToImperial() {
-        units_switch.setText(getString(R.string.units_imperial));
-        mass_text.setText(getString(R.string.mass_imp));
-        height_text.setText(getString(R.string.height_imp));
-        mass_data.getText().clear();
-        height_data.getText().clear();
+        unitsSwitch.setText(getString(R.string.units_imperial));
+        massText.setText(getString(R.string.mass_imp));
+        heightText.setText(getString(R.string.height_imp));
+        massData.getText().clear();
+        heightData.getText().clear();
     }
 
     private double getDoubleFromField(EditText field) {
         String res = field.getText().toString();
+        double d_result = 0.0;
+        if (res.length() != 0) {
+            try {
+                d_result = Double.valueOf(res);
+            } catch (NumberFormatException e) {
+                d_result = 0.0;
+            }
+        }
 
-        if (res.length() == 0)
-            return 0.0;
-        else return Double.valueOf(res);
+        return d_result;
     }
 
     private int getCategoryColor(BMICategory cat) {
@@ -142,9 +163,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveData() {
-        String massString = mass_data.getText().toString();
-        String heightString = height_data.getText().toString();
-        boolean isImperial = units_switch.isChecked();
+        String massString = massData.getText().toString();
+        String heightString = heightData.getText().toString();
+        boolean isImperial = unitsSwitch.isChecked();
         String dataToSave = isImperial + "\n" + massString + "\n" + heightString;
         FileOutputStream fileOutputStream;
         try {
@@ -173,9 +194,9 @@ public class MainActivity extends AppCompatActivity {
                 String isImperial = br.readLine();
                 String massString = br.readLine();
                 String heightString = br.readLine();
-                units_switch.setChecked(Boolean.parseBoolean(isImperial));
-                mass_data.setText(massString);
-                height_data.setText(heightString);
+                unitsSwitch.setChecked(Boolean.parseBoolean(isImperial));
+                massData.setText(massString);
+                heightData.setText(heightString);
             }
             catch (IOException e) {
                 Toast.makeText(getApplicationContext(), getString(R.string.file_error), Toast.LENGTH_LONG).show();

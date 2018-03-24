@@ -8,26 +8,38 @@ import android.widget.TextView;
 import java.util.Locale;
 
 public class ResultActivity extends AppCompatActivity {
-    private TextView bmi_data;
+    double bmiValue;
+    int catColor;
+    ConstraintLayout container;
+    TextView bmiData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
+        getExtras();
+        initializeViews();
+        showResult();
+    }
+
+    private void getExtras() {
         Bundle extras = getIntent().getExtras();
-        double bmi_value = 0.0;
-        int cat_color = 0;
+        bmiValue = 0.0;
+        catColor = 0;
         if(extras != null) {
-            bmi_value = extras.getDouble("bmi");
-            cat_color = extras.getInt("color");
+            bmiValue = extras.getDouble("bmi");
+            catColor = extras.getInt("color");
         }
+    }
 
-        ConstraintLayout container = findViewById(R.id.container);
+    private void initializeViews() {
+        container = findViewById(R.id.container);
+        bmiData = findViewById(R.id.bmi_data);
+    }
 
-        bmi_data = findViewById(R.id.bmi_data);
-        bmi_data.setText(String.format(Locale.getDefault(), "%.2f", bmi_value));
-        container.setBackgroundColor(cat_color);
-
+    private void showResult() {
+        bmiData.setText(String.format(Locale.getDefault(), "%.2f", bmiValue));
+        container.setBackgroundColor(catColor);
     }
 }

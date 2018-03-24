@@ -5,10 +5,10 @@ package com.example.piotrek.bmi238493;
  */
 
 public abstract class BMI {
-    private static double NORMAL = 18.5;
-    private static double OVERWEIGHT = 25;
-    private static double OBESITY = 30;
-    private static double H_OBESITY = 40;
+    private static final double NORMAL = 18.5;
+    private static final double OVERWEIGHT = 25;
+    private static final double OBESITY = 30;
+    private static final double H_OBESITY = 40;
 
     protected double mass;
     protected double height;
@@ -17,6 +17,7 @@ public abstract class BMI {
     public BMI(double mass, double height) {
         this.mass = mass;
         this.height = height;
+        this.bmi = -1;
     }
 
     protected abstract double calculate();
@@ -24,6 +25,9 @@ public abstract class BMI {
     protected abstract boolean dataIsValid();
 
     protected BMICategory category() {
+        if(bmi == -1)
+            calculate();
+
         if (bmi > H_OBESITY)
             return BMICategory.HEAVY_OBESITY;
         else if (bmi > OBESITY)

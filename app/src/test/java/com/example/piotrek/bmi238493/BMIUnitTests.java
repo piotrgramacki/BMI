@@ -47,4 +47,40 @@ public class BMIUnitTests {
         BMI bmiCounter = new BMIForImperial(-1, -1.9);
         bmiCounter.calculate();
     }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void for_incorrect_data_category_should_throw_exception() {
+        BMI bmiCounter = new BMIForKg(0, 0);
+        bmiCounter.category();
+    }
+
+    @Test
+    public void for_correct_underweight_BMI_shoud_return_correct_category() {
+        BMI bmiCounter = new BMIForKg(61, 183);
+        assertEquals(bmiCounter.category(), BMICategory.UNDERWEIGHT);
+    }
+
+    @Test
+    public void for_correct_normal_BMI_shoud_return_correct_category() {
+        BMI bmiCounter = new BMIForKg(70, 183);
+        assertEquals(bmiCounter.category(), BMICategory.NORMAL);
+    }
+
+    @Test
+    public void for_correct_overweight_BMI_shoud_return_correct_category() {
+        BMI bmiCounter = new BMIForKg(70, 160);
+        assertEquals(bmiCounter.category(), BMICategory.OVERWEIGHT);
+    }
+
+    @Test
+    public void for_correct_obesity_BMI_shoud_return_correct_category() {
+        BMI bmiCounter = new BMIForKg(80, 160);
+        assertEquals(bmiCounter.category(), BMICategory.OBESITY);
+    }
+
+    @Test
+    public void for_correct_heavy_obesity_BMI_shoud_return_correct_category() {
+        BMI bmiCounter = new BMIForKg(120, 160);
+        assertEquals(bmiCounter.category(), BMICategory.HEAVY_OBESITY);
+    }
 }
